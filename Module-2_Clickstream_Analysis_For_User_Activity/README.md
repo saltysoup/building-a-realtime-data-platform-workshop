@@ -499,11 +499,12 @@ As we have a copy of our formatted data in an S3 bucket `realtimeworkshop-YOURNA
 In real world use cases, this can help complement existing Data Warehouses such as Redshift for heavier offline processing or distributed big data use cases such as Presto on Hadoop clusters using Amazon EMR for data analysis.
 
 Below are some references to help get started.
-https://docs.aws.amazon.com/athena/latest/ug/glue-athena.html
-https://docs.aws.amazon.com/athena/latest/ug/getting-started.html
-https://aws.amazon.com/blogs/big-data/build-a-data-lake-foundation-with-aws-glue-and-amazon-s3/
-https://docs.aws.amazon.com/athena/latest/ug/ctas.html
-https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-presto-glue.html
+
++ https://docs.aws.amazon.com/athena/latest/ug/glue-athena.html
++ https://docs.aws.amazon.com/athena/latest/ug/getting-started.html
++ https://aws.amazon.com/blogs/big-data/build-a-data-lake-foundation-with-aws-glue-and-amazon-s3/
++ https://docs.aws.amazon.com/athena/latest/ug/ctas.html
++ https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-presto-glue.html
 
 <details>
 <summary><strong>Using SQL Queries on S3 Data Lake using Amazon Athena and AWS Glue (expand for details)</strong></summary><p>
