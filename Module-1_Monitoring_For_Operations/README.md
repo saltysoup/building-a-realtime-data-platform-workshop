@@ -83,13 +83,13 @@ Now that our Wordpress stack has been brought up, finish the installation by acc
 
 
 # Monitoring Infrastructure through CloudWatch Metrics and Dashboards
-Now that our Web App environment is up and running, we can start capturing and surfacing our performance metrics for monitoring. By default, metrics for CPU Utilization, NetworkIn/Out and Disk IOPS are available through CloudWatch automatically. However, there are other types of key metrics such as Memory Utilization and Disk Space Utilization which are not visible from the hypervisor for EC2. To monitor these, we will need to use an Agent based solution such as CloudWatch Agent to expose them for monitoring.
+~~Now that our Web App environment is up and running, we can start capturing and surfacing our performance metrics for monitoring. By default, metrics for CPU Utilization, NetworkIn/Out and Disk IOPS are available through CloudWatch automatically. However, there are other types of key metrics such as Memory Utilization and Disk Space Utilization which are not visible from the hypervisor for EC2. To monitor these, we will need to use an Agent based solution such as CloudWatch Agent to expose them for monitoring.~~
 
-As of [20th Nov 2018](https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-cloudwatch-introduces-automatic-dashboards-to-monitor-all-aws-resources/), CloudWatch provides a dashboard automatically using your existing resources, metrics and alarms. However, if we want to raise custom metrics to get a more detailed visibililty of our resources, CloudWatch Agent can help us achieve this through an agent based approach on our EC2 instances.
+~~As of [20th Nov 2018](https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-cloudwatch-introduces-automatic-dashboards-to-monitor-all-aws-resources/), CloudWatch provides a dashboard automatically using your existing resources, metrics and alarms. However, if we want to raise custom metrics to get a more detailed visibililty of our resources, CloudWatch Agent can help us achieve this through an agent based approach on our EC2 instances.~~
 
 ## 1. Setting up CloudWatch Agent
-To set up CloudWatch, we will need to SSH into our instance and download/install the CloudWatch Agent package. Once we install the agent, we will need to set the configuration to tell the Agent what metrics it should capture.
-Detailed instructions can be [found here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Agent-on-first-instance.html). In the installation guide, it refers to pre-requisites in installing the SSM agent and having an IAM role associated with your EC2 instance with sufficient permissions. As this has already been completed in the cloudformation template, you can ignore these sections.
+~~To set up CloudWatch, we will need to SSH into our instance and download/install the CloudWatch Agent package. Once we install the agent, we will need to set the configuration to tell the Agent what metrics it should capture.
+Detailed instructions can be [found here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/install-CloudWatch-Agent-on-first-instance.html). In the installation guide, it refers to pre-requisites in installing the SSM agent and having an IAM role associated with your EC2 instance with sufficient permissions. As this has already been completed in the cloudformation template, you can ignore these sections.~~
 
 
 <details>
@@ -243,7 +243,7 @@ To deploy this at scale, you would use the Wizard one time to generate the confi
 
 ## 2. Visualizing with CloudWatch Dashboard
 
-Now that we have all of our metrics available to use, we can create a dashboard using CloudWatch by adding these as widgets. If we wanted to run our CloudWatch Dashboard outside of AWS Console, here is a [blog article](https://aws.amazon.com/blogs/devops/building-an-amazon-cloudwatch-dashboard-outside-of-the-aws-management-console/) that details the process.
+~~Now that we have all of our metrics available to use, we can create a dashboard using CloudWatch by adding these as widgets. If we wanted to run our CloudWatch Dashboard outside of AWS Console, here is a [blog article](https://aws.amazon.com/blogs/devops/building-an-amazon-cloudwatch-dashboard-outside-of-the-aws-management-console/) that details the process.~~
 
 <details>
 <summary><strong>Creating a new CloudWatch Dashboard Step-By-Step Instructions (expand for details)</strong></summary><p>
