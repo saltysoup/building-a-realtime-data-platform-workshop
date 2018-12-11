@@ -426,7 +426,7 @@ To ingest the streaming log data from our WAF, we can use [Amazon Kinesis Fireho
 
 1. Under **S3 backup**, we can select whether a copy of the records from our Firehose is automatically backed up into an S3 bucket, or only for records that fails to be processed. For this workshop, select **All records** to view the data later on to have a look at the ingested data.
 
-1. Create or use an existing S3 bucket and for **Backup S3 bucket prefix**, enter a name followed by underscore such as `waf_`. This will make it easier later on to identify which prefix our firehose backups the records into.
+1. Create a new S3 bucket with a unique name such as `realtimeworkshop-YOURNAME` and for **Backup S3 bucket prefix**, enter a name followed by underscore such as `waf_`. This will make it easier later on to identify which prefix our firehose backups the records into.
 
 1. Your settings should look similar to this
 

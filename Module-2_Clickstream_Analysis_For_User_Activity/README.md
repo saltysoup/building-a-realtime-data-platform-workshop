@@ -61,6 +61,8 @@ We will first create the ETL Lambda function, which we will use later in our Kin
 
     ``` python
     from __future__ import print_function
+    import boto3
+    import os
     import base64
     import json
     import re
@@ -166,16 +168,37 @@ We will first create the ETL Lambda function, which we will use later in our Kin
                 }
 
             output.append(output_record)
-        
+
+        ## This creates a copy of the ETL'ed JSON object into an S3 bucket for other downstream consumers such as Amazon Athena
+        s3 = boto3.client("s3")
+        response = s3.put_object(
+            Body=json.dumps(data_field),
+            Bucket=os.environ['BUCKET'],
+            Key='JSON/{}'.format(ts)
+        )
+        print ("Creating a copy of JSON object into bucket {} as key {} with body {}".format(os.environ['variable'], ts, json.dumps(data_field)))
+
         ## This returns the transformed data back to Kinesis Data Firehose for delivery to our Elasticsearch domain
         print('Processing completed.  Successful records {}, Failed records {}.'.format(succeeded_record_cnt, failed_record_cnt))
+
         print ("This is the output: {}".format(output))
+
         return {'records': output}
 
     ```
-1. After putting our new code in, scroll down and find a section called **Basic settings**. Increase the timeout from 3 seconds to 1 min to allow our lambda function to process the record transformation, reducing the risk of timing out before it is complete.
+
+
+1. After putting our new code in, scroll down to the **Environment variables** section and create a new key value entry for the code to use the name of our S3 bucket (from module 1) for placing a copy of the ETL'ed JSON object into.
+
+    **Key** | **Value**
+    --- | -----
+    `BUCKET` | `realtimeworkshop-YOURNAME`
+
+1. Scroll down and find a section called **Basic settings**. Increase the timeout from 3 seconds to 1 min to allow our lambda function to process the record transformation, reducing the risk of timing out before it is complete.
 
 1. Finish creating the function by selecting **Save** at the top of the page.
+
+The lambda function will now be invoked automatically as new data arrives into the Kinesis Firehose stream. The script with ETL incoming clickstream logs into JSON format for delivery into Elasticsearch, and place a copy of the object into an S3 bucket within a prefix called "JSON".
 
 </p></details>
 
@@ -213,7 +236,7 @@ Now that our ETL Lambda has been created, let's create a new Kinesis Data Fireho
 
 1. Under **S3 backup**, we can select whether a copy of the records from our Firehose is automatically backed up into an S3 bucket, or only for records that fails to be processed. For this workshop, select **All records** to view the data later on to have a look at the ingested data.
 
-1. Create or use an existing S3 bucket and for **Backup S3 bucket prefix**, enter a name followed by underscore such as `apache_`. This will make it easier later on to identify which prefix our firehose backups the records into.
+1. Create or use an existing S3 bucket called `realtimeworkshop-YOURNAME` and for **Backup S3 bucket prefix**, enter a name followed by underscore such as `apache_`. This will make it easier later on to identify which prefix our firehose backups the records into.
 
 1. Your settings should look similar to this
 
@@ -469,19 +492,89 @@ Alternatively, you can import a dashboard template to see a working example. `No
 
     ![Kibana_Dashboard](images/Kibana_Dashboard.png)
 
-# [Optional Lab] - Analyzing Clickstream data with Amazon Glue and Amazon Athena
+# [Extra Lab] - Analyzing Clickstream data with AWS Glue and Amazon Athena
 
-As we have a copy of the clickstream data being saved in our S3 bucket (as configured in Kinesis Data Firehose), this is a great starting point for building up a data lake. Try using Amazon Glue's crawler to discover the schema for our data in S3, then use Athena to run SQL queries on the Glue hive tables.
+As we have a copy of our formatted data in an S3 bucket `realtimeworkshop-YOURNAME`, we have the basis of starting our first data lake to feed into a larger data platform such as analytics or machine learning. In this exercise, we will look at how we can create a data catalog (hive metadata) using AWS Glue, and start exploring our data using SQL queries via Amazon Athena.
 
-In real world use cases, this can help complement existing Data Warehouses such as Redshift for heavier offline processing and analysis of your data.
+In real world use cases, this can help complement existing Data Warehouses such as Redshift for heavier offline processing or distributed big data use cases such as Presto on Hadoop clusters using Amazon EMR for data analysis.
 
 Below are some references to help get started.
 https://docs.aws.amazon.com/athena/latest/ug/glue-athena.html
 https://docs.aws.amazon.com/athena/latest/ug/getting-started.html
 https://aws.amazon.com/blogs/big-data/build-a-data-lake-foundation-with-aws-glue-and-amazon-s3/
 https://docs.aws.amazon.com/athena/latest/ug/ctas.html
+https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-presto-glue.html
 
+<details>
+<summary><strong>Using SQL Queries on S3 Data Lake using Amazon Athena and AWS Glue (expand for details)</strong></summary><p>
 
+## Creating a Data Catalog using AWS Glue
+
+1. Verify that the JSON formatted clickstream data is being created in your S3 bucket `realtimeworkshop-YOURNAME` under the prefix `JSON`.
+
+1. In the AWS Management Console select **Services** then select **AWS Glue** under Analytics.
+
+1. In the left hand panel, select **Crawlers** then **Add crawler**. This will allow us to create a new crawler that will traverse our data source and create a new data catalog including the schema.
+
+1. Give your crawler a name such as **realtimecrawler**, then select **Next**.
+
+1. Ensure that the data store is selected to **S3**, then enter the JSON folder path of where the ETL data is stored within your `realtimeworkshop-YOURNAME` bucket. You can also use the Folder icon button to open a GUI window to select your path.
+
+    ![crawlers3path](images/crawlers3path.PNG)
+
+1. Select **Next** to proceed to the next screen.
+
+1. Select **No** for **Add another data store** then proceed to the next step.
+
+1. Check **Create an IAM role** to create a new role for our crawler to have permissions to traverse our S3 bucket and enter a name such as `AWSGlueServiceRole-realtimecrawler`.
+
+    ![crawleriam](images/crawleriam.PNG)
+
+1. Select **Next** to proceed to the next screen.
+
+1. For **Frequency**, select **Run on demand** as we will be running our crawler manually after the creation wizard. Alternatively, we could have the crawler run in a scheduled timer or have it run dynamically in an event driven workflow using AWS Lambda.
+
+1. Under **Database**, create a new Data Catalog by selecting the **Add database** button. Enter a name such as `clickstreamlogs` and select **Next**.
+
+    ![crawlerdatabase](images/crawlerdatabase.PNG)
+
+1. Finish the rest of the wizard by selecting **Next**, then **Finish**.
+
+1. You should now be back at the AWS Glue Console screen. Start the crawler by selecting **Run it now** in the top banner, or by selecting your new crawler and selecting **Run crawler**.
+
+1. Your crawler should now begin to run and the **Status** will change from Starting, Running, Stopping and back to Ready once complete in 2-3 minutes.
+
+1. Once complete, select **Databases** in the left hand panel and select your newly created data catalog.
+
+1. View the classified tables by selecting **Tables in clickstreamlogs**. This should list a single table called `json`, having the S3 bucket for **Location** and **Classification** as json.
+
+1. Select your table to view the Schema and other meta data about the data that the crawler has discovered. 
+
+## Analysing Data through SQL using Amazon Athena
+
+Now that we have a hive compatible table containing the location of the data and schema, we can leverage Amazon Athena to use SQL queries to interact directly with data in our Amazon S3 bucket.
+
+1. In the AWS Management Console select **Services** then select **Athena** under Analytics.
+
+1. On the left hand panel, use the drop down menu to select our database **clickstreamlogs**. This is available as AWS Glue has native integration with Amazon Athena.
+
+1. Try running some SQL queries to interrogate our data.
+
+    ```sql
+    SELECT * FROM "clickstreamlogs"."json" limit 10;
+    ```
+
+    ```sql
+    -- List clickstream logs where username is anonymous
+    SELECT * FROM "clickstreamlogs"."json" WHERE username='anonymous' LIMIT 10;
+    ```
+
+    ```sql
+    -- List clickstream logs where user accessed big unicorns product page
+    SELECT * FROM "clickstreamlogs"."json" WHERE request LIKE '%bigunicorns%';
+    ```
+
+</p></details>
 
 # Other Applications of Clickstream Analysis Data
 
