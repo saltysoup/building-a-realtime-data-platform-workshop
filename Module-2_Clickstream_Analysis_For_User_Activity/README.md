@@ -521,7 +521,7 @@ Below are some references to help get started.
 
 1. Ensure that the data store is selected to **S3**, then enter the JSON folder path of where the ETL data is stored within your `realtimeworkshop-YOURNAME` bucket. You can also use the Folder icon button to open a GUI window to select your path.
 
-    ![crawlers3path](images/crawlers3path.PNG)
+    ![crawlers3path](images/crawlers3path.png)
 
 1. Select **Next** to proceed to the next screen.
 
@@ -529,7 +529,7 @@ Below are some references to help get started.
 
 1. Check **Create an IAM role** to create a new role for our crawler to have permissions to traverse our S3 bucket and enter a name such as `AWSGlueServiceRole-realtimecrawler`.
 
-    ![crawleriam](images/crawleriam.PNG)
+    ![crawleriam](images/crawleriam.png)
 
 1. Select **Next** to proceed to the next screen.
 
@@ -537,7 +537,7 @@ Below are some references to help get started.
 
 1. Under **Database**, create a new Data Catalog by selecting the **Add database** button. Enter a name such as `clickstreamlogs` and select **Next**.
 
-    ![crawlerdatabase](images/crawlerdatabase.PNG)
+    ![crawlerdatabase](images/crawlerdatabase.png)
 
 1. Finish the rest of the wizard by selecting **Next**, then **Finish**.
 
