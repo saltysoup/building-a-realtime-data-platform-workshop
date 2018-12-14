@@ -176,7 +176,7 @@ We will first create the ETL Lambda function, which we will use later in our Kin
             Bucket=os.environ['BUCKET'],
             Key='JSON/{}'.format(ts)
         )
-        print ("Creating a copy of JSON object into bucket {} as key {} with body {}".format(os.environ['variable'], ts, json.dumps(data_field)))
+        print ("Creating a copy of JSON object into bucket {} as key {} with body {}".format(os.environ['BUCKET'], ts, json.dumps(data_field)))
 
         ## This returns the transformed data back to Kinesis Data Firehose for delivery to our Elasticsearch domain
         print('Processing completed.  Successful records {}, Failed records {}.'.format(succeeded_record_cnt, failed_record_cnt))
