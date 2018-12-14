@@ -159,7 +159,7 @@ We will first create the ETL Lambda function, which we will use later in our Kin
                     'data': base64.b64encode(json.dumps(data_field))
                 }
             else:
-                print('Parsing failed')
+                print('Ignoring unmatched data')
                 failed_record_cnt += 1
                 output_record = {
                     'recordId': record['recordId'],
